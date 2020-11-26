@@ -14,15 +14,51 @@ import {
   View,
   Text,
   StatusBar,
+  TouchableOpacity,
 } from 'react-native';
+import {Formik} from 'formik';
+import {Header, Colors} from 'react-native/Libraries/NewAppScreen';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const CheckboxRow: () => React$Node = ({
+  title = 'Default Title',
+  value = false,
+  selected = false,
+  onPress = () => {},
+}) => {
+  return (
+    <TouchableOpacity disabled={selected} onPress={onPress}>
+      <View style={styles.checkboxRowContainer}>
+        <Text style={styles.title}>{title}</Text>
+        <View style={styles.checkbox}>
+          {selected && <View style={styles.checkboxValue} />}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const checkboxValues = [
+  {
+    id: '1',
+    title: 'Eins',
+  },
+  {
+    id: '2',
+    title: 'Zwei',
+  },
+  {
+    id: '3',
+    title: 'Drei',
+  },
+  {
+    id: '4',
+    title: 'Vier',
+  },
+  {
+    id: '5',
+    title: 'Funf',
+  },
+];
 
 const App: () => React$Node = () => {
   return (
@@ -33,38 +69,29 @@ const App: () => React$Node = () => {
           contentInsetAdjustmentBehavior="automatic"
           style={styles.scrollView}>
           <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
           <View style={styles.body}>
             <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
+              <Formik
+                initialValues={{selected: ''}}
+                onSubmit={(values) => console.log(values)}>
+                {({values, setFieldValue}) => (
+                  <View>
+                    {checkboxValues.map((v) => {
+                      return (
+                        <CheckboxRow
+                          title={v.title}
+                          value={v.id}
+                          selected={values.selected === v.id}
+                          onPress={() => {
+                            setFieldValue('selected', v.id);
+                          }}
+                        />
+                      );
+                    })}
+                  </View>
+                )}
+              </Formik>
             </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -76,10 +103,6 @@ const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: Colors.lighter,
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
   body: {
     backgroundColor: Colors.white,
   },
@@ -87,27 +110,30 @@ const styles = StyleSheet.create({
     marginTop: 32,
     paddingHorizontal: 24,
   },
-  sectionTitle: {
+  title: {
     fontSize: 24,
     fontWeight: '600',
     color: Colors.black,
+    marginEnd: 8,
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
+  checkboxRowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    paddingBottom: 8,
+    marginHorizontal: 4,
+    marginBottom: 16,
+    justifyContent: 'space-between',
   },
-  highlight: {
-    fontWeight: '700',
+  checkbox: {
+    height: 24,
+    width: 24,
+    borderWidth: 1,
+    padding: 2,
   },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
+  checkboxValue: {
+    flex: 1,
+    backgroundColor: Colors.primary,
   },
 });
 
